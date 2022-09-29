@@ -30,9 +30,6 @@ def negative_color(color):
 
 
 def test_screen(screen, state):
-    bg = negative_color(bg_color) if state.negative else bg_color
-    screen.fill(bg)
-
     if state.font_index == None:
         render_font = main_font
     else:
@@ -48,9 +45,16 @@ def test_screen(screen, state):
     if state.swap:
         text_color = GREEN if text_color == RED else RED
     text_color = negative_color(text_color) if state.negative else text_color
+    bg = negative_color(bg_color) if state.negative else bg_color
+
+    if state.inverted:
+        text_color, bg = bg, text_color
+
+    screen.fill(bg)
+    #  screen.blit(happiness, (0, 0))
 
     if state.waiting:
-        text = render_font.render("СЛУШАЙ", True, BLUE)
+        text = render_font.render(state.povinuisa, True, BLUE)
     else:
         text = render_font.render(text_str, True, text_color)
     text_place = center_place(*size, text)
@@ -66,13 +70,16 @@ def start_screen(screen, state):
     screen.blit(text, text_place)
 
 pg.init()
-#  w, h = size = 1440, 900
-#  screen = pg.display.set_mode(size, FULLSCREEN)
-#  font_size = 170
-w, h = size = 800, 600
-screen = pg.display.set_mode(size)
-font_size = 80
+w, h = size = 1440, 900
+screen = pg.display.set_mode(size, FULLSCREEN)
+font_size = 170
+#  w, h = size = 800, 600
+#  screen = pg.display.set_mode(size)
+#  font_size = 80
 pg.display.set_caption("Тест репликанта")
+
+happiness = pg.image.load("bg.png")
+happiness = pg.transform.scale(happiness, size)
 
 BLACK = Color("black")
 RED = Color(200, 0, 0)
@@ -100,6 +107,8 @@ def reset(state):
     state.swap = False
     state.waiting = True
     state.timing = 0
+    state.inverted = False
+    state.povinuisa = "СЛУШАЙ"
 reset(state)
 
 running = True
@@ -116,7 +125,10 @@ while running:
                     state.answer = rng.choice([RIGHT, WRONG])
                     state.waiting = False
                 else:
+                    state.povinuisa = rng.choice(["СЛУШАЙ", "ПОВИНУЙСЯ"])
                     state.waiting = True
+            if event.key == K_i:
+                state.inverted = not state.inverted
             if event.key == K_s:
                 if state.screen != SCREEN_TEST:
                     state.screen = SCREEN_TEST
