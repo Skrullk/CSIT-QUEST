@@ -72,6 +72,7 @@ pg.init()
 w, h = size = 800, 600
 screen = pg.display.set_mode(size)
 font_size = 80
+pg.display.set_caption("Тест репликанта")
 
 BLACK = Color("black")
 RED = Color(200, 0, 0)
@@ -117,10 +118,12 @@ while running:
                 else:
                     state.waiting = True
             if event.key == K_s:
-                state.screen = SCREEN_TEST
+                if state.screen != SCREEN_TEST:
+                    state.screen = SCREEN_TEST
             if event.key == K_r:
-                reset(state)
-                state.screen = SCREEN_START
+                if state.screen != SCREEN_START:
+                    reset(state)
+                    state.screen = SCREEN_START
             if event.key == K_n:
                 state.negative = not state.negative
             if event.key == K_b:
